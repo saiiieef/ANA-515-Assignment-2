@@ -103,7 +103,7 @@ kbl(col_des, caption = "Fifa Advertising Data") %>%
 
 fifa_data_aud <- filter(fifa_data, Audience_Percent > 0.3) #Filtering out data where there is greater than 0.3 TV audience for profit
 fifa_data_pop <- filter(fifa_data, Population_Percent > 0.2) #Filtering out data where there is greater than 0.2 TV audience for profit
-fifa_data_gdp <- filter(fifa_data, GDP_Weighted_Share > 0.2) #Filtering out data where there is greater than 0.2 TV audience for profit
+fifa_data_gdp <- filter(fifa_data, GDP_Weighted_Share > 0.0) #Filtering out data where there is greater than 0.0 TV audience for profit
 
 a <- summary(fifa_data_aud$Audience_Percent)
 
