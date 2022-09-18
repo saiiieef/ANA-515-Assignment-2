@@ -1,0 +1,156 @@
+---
+title: "ANA 515 Assignment 2"
+author: "Saif Hossain"
+date: "2022-09-16"
+output: 
+    pdf_document: default
+    html_document:
+      code_folding: "show"
+      theme:
+        bootswatch: "darkly"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = FALSE}
+#The include = FALSE function hides both the code and output in my output document
+
+#You need to install these packages first to be able to use the functions within them. You can install them from the Tools tab or write a new code chunk: install.packages("package_name"). 
+library(tidyverse)
+library(knitr)
+library(dplyr)
+library(magrittr)
+library(knitr)
+library(kableExtra)
+```
+
+
+## Fifa
+
+The data here are countries that play soccer and their attributes. The countries that play soccer, in which confederation they play for example Europe plays in Uefa. Population_share, tv_audience_share and gdp_weighted share.The data measures TV audience share for marketing purposes. The data is opensource data and can be collected from public source. The data can be used to allocate money for advertisement. The country with bigger tv audience share greater the cost of advertising in that country. The data is stored in csv (comma separated values) format. The data frame is delimited, comma is the delimiter. If it was a binary file, binary editor could be used to open it or powershell could be used as well. Since, this is a csv file Excel will most commonly be used to open the file.
+
+
+```{r loading_data, echo = TRUE}
+
+#Reading the data into R.
+
+
+#echo = FALSE prevents code, but not the results from appearing in the finished file. Use this when writing reports aimed at people who don’t want to see the underlying R code. But echo is set to true.
+
+url <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/fifa/fifa_countries_audience.csv" #read.csv was used to read the csv file, this came with the base R package. 
+
+fifa_data <- read.csv(url)  #Assigning the url to object 
+
+```
+
+
+
+
+
+```{r results = FALSE}
+# Cleaning Data using functions.
+fifa_data <- rename(fifa_data, Audience_Percent = 'tv_audience_share')
+fifa_data <- rename(fifa_data, Country = 'country')
+fifa_data <- rename(fifa_data, Confederation = 'confederation')
+fifa_data <- rename(fifa_data, Population_Percent = 'population_share')
+fifa_data <- rename(fifa_data, GDP_Weighted_Share = 'gdp_weighted_share')
+fifa_data <- filter(fifa_data, Audience_Percent > 0.0) #Filtering out data where there is 0 TV audience
+head(fifa_data)
+```
+
+
+```{r results = TRUE}
+# Getting columns of my dataframe
+
+colnames(fifa_data)
+  
+```
+
+```{r results = TRUE}
+# Characteristics of the data. And Inline code below.
+
+dimensions <- dim(fifa_data)
+```
+
+This dataframe has `r dimensions[1]` rows and `r dimensions[2]` columns. The names of the columns and a brief description of each are in the table below:
+
+
+```{r results = TRUE}
+# Column Description using kable
+
+col_des <- data.frame(
+  Columns = c("Country","Audience_Percent","Confederation","Population_Percent","GDP_Weighted_Share"),
+  Summary = c("Country Playing Soccer.", "Percentage of people watching Soccer.", " The league they are playing.","What is the percentage of people vs who is watching soccer.","GDP of the country in terms of watching soccer."
+    
+    
+  )
+)
+
+
+kbl(col_des, caption = "Fifa Advertising Data") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+  
+```
+
+
+
+```{r results = TRUE}
+
+#Summary statistics for columns without missing values.
+
+
+fifa_data_aud <- filter(fifa_data, Audience_Percent > 0.3) #Filtering out data where there is greater than 0.3 TV audience for profit
+fifa_data_pop <- filter(fifa_data, Population_Percent > 0.2) #Filtering out data where there is greater than 0.2 TV audience for profit
+fifa_data_gdp <- filter(fifa_data, GDP_Weighted_Share > 0.2) #Filtering out data where there is greater than 0.2 TV audience for profit
+
+a <- summary(fifa_data_aud$Audience_Percent)
+
+min_aud <- min(fifa_data_aud$Audience_Percent)
+max_aud <- max(fifa_data_aud$Audience_Percent)
+mean_aud <- mean(fifa_data_aud$Audience_Percent)
+
+a1 <- sum(is.na(fifa_data_aud$Audience_Percent)) #Number of missing values in Audience_percent column
+
+mis_aud <- a1
+
+b <- summary(fifa_data_aud$Population_Percent)
+
+min_pop <- min(fifa_data_aud$Audience_Percent)
+max_pop <- max(fifa_data_aud$Audience_Percent)
+mean_pop <- mean(fifa_data_aud$Audience_Percent)
+
+
+b1 <- sum(is.na(fifa_data_aud$Population_Percent)) #Number of missing values in Population_Percent column
+
+mis_pop <- b1
+
+c <- summary(fifa_data_aud$GDP_Weighted_Share)
+
+min_gdp <- min(fifa_data_aud$GDP_Weighted_Share)
+max_gdp <- max(fifa_data_aud$GDP_Weighted_Share)
+mean_gdp <- mean(fifa_data_aud$GDP_Weighted_Share)
+
+
+c1 <- sum(is.na(fifa_data_aud$GDP_Weighted_Share)) #Number of missing values in GDP_Weighted_Share column
+
+mis_gdp <- c1
+
+
+
+summary_fifa <- data.frame(
+  Summary = c("Audience Percentage", "Population Percentage", "GDP Weighted Share"),
+  Minimum = c(min_aud, min_pop, min_gdp),
+  Maximum = c(max_aud, max_pop, max_gdp),
+  Mean = c(mean_aud, mean_pop, mean_gdp),
+  Missing = c(mis_aud, mis_pop, mis_gdp)
+  
+  
+)
+
+
+kbl(summary_fifa, caption = "Fifa Profitable Country Data") %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+
+```
